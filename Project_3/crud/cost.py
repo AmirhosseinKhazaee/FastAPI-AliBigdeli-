@@ -4,7 +4,7 @@ from schemas.cost import CostCreate, CostUpdate
 from fastapi import HTTPException, status
 
 
-def create_cost(cost: CostCreate, db: Session):
+def create_cost(db: Session, cost: CostCreate):
     db_cost = Cost(**cost.model_dump())
     db.add(db_cost)
     db.commit()
