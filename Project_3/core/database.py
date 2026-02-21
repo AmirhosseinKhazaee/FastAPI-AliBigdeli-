@@ -1,7 +1,15 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base,Session
+from typing import Generator
 
 DATABASE_URL = "sqlite:///./costs.db"
+
+def get_db() -> Generator[Session, None, None]:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 engine = create_engine(
     DATABASE_URL,
