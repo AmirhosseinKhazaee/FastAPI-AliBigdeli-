@@ -4,12 +4,6 @@ from typing import Generator
 
 DATABASE_URL = "sqlite:///./costs.db"
 
-def get_db() -> Generator[Session, None, None]:
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 engine = create_engine(
     DATABASE_URL,
@@ -23,3 +17,10 @@ SessionLocal = sessionmaker(
 )
 
 Base = declarative_base()
+
+def get_db() -> Generator[Session, None, None]:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

@@ -4,7 +4,7 @@ from typing import List
 
 from core.database import get_db
 from schemas.cost import CostCreate, CostUpdate, CostResponse
-from crud import cost as crud_cost  # import your crud layer
+from crud import cost as crud_cost  
 
 router = APIRouter(
     prefix="/costs",

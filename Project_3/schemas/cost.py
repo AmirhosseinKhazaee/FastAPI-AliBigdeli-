@@ -8,7 +8,7 @@ class CostCreate(BaseModel):
     amount : float = Field(ge=0)
     
 class CostUpdate(BaseModel):
-    description : Optional[str] =Field(default=None,min_length=3 , max_length=100, pattern = r"^[a-zA-Z0-9\- ]+$")
+    description : Optional[str] =Field(default=None,min_length=3 , max_length=100, pattern = r"^[a-zA-Z0-9\- ]+$" )
     amount : Optional[float] =Field(default=None ,ge=0)
     
     
