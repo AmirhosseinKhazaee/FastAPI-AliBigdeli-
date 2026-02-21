@@ -11,4 +11,4 @@ app = FastAPI()
 app.include_router(cost_router)
 
 
-Base.metadata.create_all(bind=engine)
+
