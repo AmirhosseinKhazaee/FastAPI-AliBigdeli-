@@ -1,14 +1,15 @@
 from contextlib import contextmanager
 
-@contextmanager
+# @contextmanager
 def generator():
     try:
-        # خود generator به جای لیست کامل
-        g = (i for i in range(1,10))  # generator expression
-        yield g
+        x = 0
+        while True:
+            yield x
+            x+=1
     finally:
         print("___End___")
-
-with generator() as g:
-    print(next(g))  # 1
-    print(next(g))  # 2xx
+        
+g= generator()
+for i in range(2):
+    print(next(g))
