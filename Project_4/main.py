@@ -21,3 +21,22 @@ def public():
 @app.get("/private")
 def private(user: UserModel = Depends(get_current_user)):
     return {"message": "this is private endpoint"}
+
+
+from fastapi.security import APIKeyHeader
+
+header_scheme = APIKeyHeader(name="api_key")
+
+
+@app.get("/apiheaderkey")
+async def apiheaderkey(key: str = Depends(header_scheme)):
+    return {"key": key}
+
+from fastapi.security import APIKeyQuery
+
+header_scheme = APIKeyQuery(name="api_key")
+
+
+@app.get("/apiheaderquery")
+async def apiheaderquery(key: str = Depends(header_scheme)):
+    return {"key": key}
