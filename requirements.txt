@@ -10,3 +10,4 @@ fastapi-cache2[redis]
 psycopg2-binary
 fastapi-mail[httpx]
 sentry-sdk[fastapi]
+pydantic-settings
