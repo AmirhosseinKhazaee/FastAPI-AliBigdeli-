@@ -11,9 +11,7 @@ def register_user(db: Session, data: UserCreate):
         raise ValueError("Email already taken")
 
     user = UserModel(
-        username=data.username,
-        email=data.email,
-        password=hash_password(data.password)
+        username=data.username, email=data.email, password=hash_password(data.password)
     )
 
     db.add(user)

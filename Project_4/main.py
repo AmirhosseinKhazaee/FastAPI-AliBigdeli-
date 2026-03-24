@@ -32,6 +32,7 @@ header_scheme = APIKeyHeader(name="api_key")
 async def apiheaderkey(key: str = Depends(header_scheme)):
     return {"key": key}
 
+
 from fastapi.security import APIKeyQuery
 
 header_scheme = APIKeyQuery(name="api_key")
