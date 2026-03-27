@@ -1,17 +1,24 @@
 from sqlalchemy.orm import Session
 from models.user import UserModel
 from schemas.auth import UserCreate, UserLogin
-from core.security import hash_password, verify_password, create_access_token
+from core.security import (
+    decode_token,
+    hash_password,
+    verify_password,
+    create_access_token,
+    create_refresh_token,
+)
 
 
 def register_user(db: Session, data: UserCreate):
 
-    # check duplicate email
-    if db.query(UserModel).filter_by(email=data.email).first():
+    if db.query(UserModel).filter(UserModel.email == data.email).first():
         raise ValueError("Email already taken")
 
     user = UserModel(
-        username=data.username, email=data.email, password=hash_password(data.password)
+        username=data.username,
+        email=data.email,
+        password=hash_password(data.password),
     )
 
     db.add(user)
@@ -28,6 +35,30 @@ def login_user(db: Session, data: UserLogin):
     if not user or not verify_password(data.password, user.password):
         raise ValueError("Invalid email or password")
 
-    token = create_access_token({"sub": str(user.id)})
+    access_token = create_access_token(user.id)
+    refresh_token = create_refresh_token(user.id)
 
-    return token
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+    }
+
+
+def refresh_access_token(db: Session, refresh_token: str):
+
+    payload = decode_token(refresh_token)
+
+    if payload.get("type") != "refresh":
+        raise ValueError("Invalid refresh token")
+
+    user_id = payload["sub"]
+
+    user = db.query(UserModel).filter(UserModel.id == user_id).first()
+
+    if not user:
+        raise ValueError("User no longer exists")
+
+    access_token = create_access_token(user.id)
+
+    return {"access_token": access_token}
