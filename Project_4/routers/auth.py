@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from core.deps import get_current_user
 from models.user import UserModel
 from core.database import get_db
-from schemas.auth import UserCreate, UserLogin, Token, RefreshTokenRequest ,AccessToken
-from services.auth import register_user, login_user , refresh_access_token
+from schemas.auth import UserCreate, UserLogin, Token, RefreshTokenRequest, AccessToken
+from services.auth import register_user, login_user, refresh_access_token
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -32,6 +32,7 @@ def refresh_token(data: RefreshTokenRequest, db: Session = Depends(get_db)):
         return refresh_access_token(db, data.refresh_token)
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
+
 
 @router.get("/me")
 def get_me(current_user: UserModel = Depends(get_current_user)):
