@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException ,status
 from sqlalchemy.orm import Session
 from core.deps import get_current_user
 from models.user import UserModel
@@ -23,7 +23,7 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
     try:
         return login_user(db, data)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @router.post("/refresh", response_model=AccessToken)
