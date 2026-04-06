@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from core.database import Base, get_db
 from typing import Generator
 from main import app
+from pytest import fixture
 
 class TestSettings(BaseSettings):
     DATABASE_URL: str
@@ -22,8 +23,8 @@ engine = create_engine(
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
-def override_get_db() -> Generator[Session, None, None]:
+@fixture(scope="module")
+def db_session() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
         yield db
@@ -31,8 +32,20 @@ def override_get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-app.dependency_overrides[get_db] = override_get_db
+@fixture(scope="module",autouse=True)
+def override_dependencies(db_session):
+    app.dependency_overrides[get_db] =lambda : db_session
+    yield
+    app.dependency_overrides.pop(get_db ,None)
 
-Base.metadata.create_all(bind=engine)
 
-client = TestClient(app)
+@fixture(scope="session",autouse=True)
+def tear_up_and_down_database():
+    Base.metadata.create_all(bind=engine)
+    yield 
+    Base.metadata.drop_all(bind=engine)
+
+@fixture(scope="function")
+def annon_client():
+    client = TestClient(app)
+    yield client
