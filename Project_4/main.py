@@ -7,8 +7,24 @@ from routers.auth import router as auth_router
 from core.deps import get_current_user
 from models.user import UserModel
 from middleware.test import TestMiddleware
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+from contextlib import asynccontextmanager
+import fastapi_cache.backends.
+scheduler = AsyncIOScheduler()
 
-app = FastAPI(docs_url=None, swagger_ui_oauth2_redirect_url=None)
+
+
+@asynccontextmanager
+async def lifespan(app : FastAPI):
+    print("Application Started")
+    scheduler.add_job(my_task , IntervalTrigger(seconds=10))
+    scheduler.start()
+    yield
+    scheduler.shutdown()
+    print("Application Shutdown")
+
+app = FastAPI(lifespan=lifespan,docs_url=None, swagger_ui_oauth2_redirect_url=None)
 patch_fastapi(app, docs_url="/swagger")
 
 app.include_router(task_router)
@@ -35,3 +51,23 @@ def public():
 @app.get("/private")
 def private(user: UserModel = Depends(get_current_user)):
     return {"message": "this is private endpoint"}
+
+
+from fastapi import BackgroundTasks
+from time import sleep, strftime
+
+
+def async_task():
+    print("hello")
+    sleep(3)
+    print("finished")
+
+
+@app.get("/async")
+async def try_async(background_tasks: BackgroundTasks):
+    background_tasks.add_task(async_task)
+    return {"message": "task added"}
+
+
+def my_task():
+    print(f"Task excuted at {strftime('%Y-%m-%d %H:%M:%S')}")
