@@ -10,7 +10,6 @@ from middleware.test import TestMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from contextlib import asynccontextmanager
-import fastapi_cache.backends.
 scheduler = AsyncIOScheduler()
 
 
